@@ -1,34 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="HRO" x="0px" y="0px" viewBox="0 0 2100 2100" xml:space="preserve">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="HRO" x="0px" y="0px" viewBox="0 0 400 400" xml:space="preserve">
 	<defs>
 		<filter xmlns="http://www.w3.org/2000/svg" id="crinkleEffect" x="0" y="0" width="100%" height="100%">
-			<feTurbulence type="fractalNoise" baseFrequency=".125" numOctaves="10" result="noise" />
+			<feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="10" result="smallnoise" />
+			<feTurbulence type="fractalNoise" baseFrequency="0.25" numOctaves="10" result="largenoise" />
+			<feComposite in="smallnoise" in2="largenoise" operator="in" result="noise" />
 			<!-- Diffuse Lighting to create the overall lighting effect -->
-			<feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="1" result="diffuseLight">
-				<feDistantLight azimuth="135" elevation="2" />
+			<feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="1" result="softlight">
+				<feDistantLight azimuth="135" elevation="5" />
 			</feDiffuseLighting>
 			<!-- Specular Lighting to add highlights modify surfaceScale -->
-			<feSpecularLighting in="noise" surfaceScale="10" specularConstant="1" specularExponent="10" lighting-color="#ffffff" result="specularLight">
+			<feSpecularLighting in="noise" surfaceScale="10" specularConstant="1" specularExponent="10" lighting-color="#ffffff" result="sharplight">
 				<feDistantLight azimuth="45" elevation="2" />
 			</feSpecularLighting>
 			<!-- Composite the diffuse and specular lighting -->
-			<feComposite in="diffuseLight" in2="specularLight" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="combinedLight" />
+			<feComposite in="softlight" in2="sharplight" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="combinedLight" />
 			<!-- Use feComponentTransfer to adjust transparency -->
 			<feComponentTransfer in="combinedLight" result="transparencyAdjust">
-				<feFuncA type="table" tableValues=".75 .25" />
+				<feFuncA type="table" tableValues="1 1" />
 			</feComponentTransfer>
 			<!-- Blend the adjusted transparency with the source graphic -->
 			<feBlend in="SourceGraphic" in2="transparencyAdjust" mode="overlay" />
+		</filter>
+		<!-- Define a radial gradient to simulate the light intensity -->
+		<radialGradient id="ledGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+			<stop offset="0%" style="stop-color:#f00;stop-opacity:1" />
+			<stop offset="50%" style="stop-color:#f00;stop-opacity:1" />
+			<stop offset="100%" style="stop-color:#f00;stop-opacity:0" />
+			<stop offset="150%" style="stop-color:transparent;stop-opacity:0" />
+		</radialGradient>
+		<!-- Define a filter for the glow effect -->
+		<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+			<feGaussianBlur stdDeviation="25" result="coloredBlur" edgeMode="duplicate" />
+			<feMerge>
+				<feMergeNode in="coloredBlur" />
+				<feMergeNode in="SourceGraphic" />
+			</feMerge>
 		</filter>
 	</defs>
 	<style type="text/css">
 		svg {
 		background: linear-gradient(0deg, black, transparent);
 		background-repeat: no-repeat;
+		background:black;
+		width: 400px;
+		height:400px;
 		}
 		.st0{
 		fill: transparent;
 		filter: url(#crinkleEffect);
 		}
+		.led {
+		fill: url(#ledGradient);
+		filter: url(#glow);
+		stroke: #ccc;
+		stroke-width: 4;
+		}
 	</style>
-	<rect width="2100" height="2100" class="st0" />
+	<rect width="400" height="400" class="st0" />
+	<circle cx="50" cy="50" r="40" class="led" />
 </svg>
